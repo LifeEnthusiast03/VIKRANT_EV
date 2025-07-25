@@ -5,7 +5,7 @@ import HomePage from './pages/Home/Home';
 import TeamPage from './pages/Team/Team';
 import ContactPage from './pages/Contact/Contact';
 import ProjectPage from './pages/Project/Project';
-import ServiceBooking from './pages/Service/service';
+import ServiceBooking from './pages/service/service';
 import Dashboard from './pages/Dashboard/dashboard';
 import ElectricBikeChatbot from './components/ui/ChatBot/ChatBot';
 
