@@ -1,101 +1,15 @@
 
 import React, { useState, useEffect } from 'react';
-import { Mail, Loader2, AlertCircle } from 'lucide-react';
-import { teamService } from '../../services/teamservice';
+import { Mail } from 'lucide-react';
+import { teamdata } from '../../../constant/teamdata';
 
 const TeamPage = () => {
   const [teamMembers, setTeamMembers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchTeamData();
+    // Load team data from local teamdata.js file
+    setTeamMembers(teamdata);
   }, []);
-
-  const fetchTeamData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      const result = await teamService.getTeamMembers();
-      
-      if (result.success) {
-        setTeamMembers(result.data);
-      } else {
-        setError(result.message);
-      }
-    } catch (err) {
-      setError('An unexpected error occurred while fetching team data');
-      console.error('Error in fetchTeamData:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleRetry = () => {
-    fetchTeamData();
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white pt-20">
-        {/* Enhanced Dynamic Background */}
-        <div className="fixed inset-0 opacity-20 pointer-events-none">
-          <div 
-            className="absolute inset-0"
-            style={{
-              background: `radial-gradient(circle at 30% 40%, 
-                rgba(34, 197, 94, 0.15) 0%, 
-                rgba(132, 204, 22, 0.1) 30%,
-                rgba(234, 179, 8, 0.08) 60%, 
-                transparent 100%)`
-            }}
-          />
-        </div>
-        
-        <div className="max-w-7xl mx-auto px-6 py-20">
-          <div className="flex flex-col items-center justify-center min-h-[50vh]">
-            <Loader2 className="w-12 h-12 animate-spin text-green-400 mb-4" />
-            <p className="text-xl text-gray-300">Loading team members...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white pt-20">
-        {/* Enhanced Dynamic Background */}
-        <div className="fixed inset-0 opacity-20 pointer-events-none">
-          <div 
-            className="absolute inset-0"
-            style={{
-              background: `radial-gradient(circle at 30% 40%, 
-                rgba(34, 197, 94, 0.15) 0%, 
-                rgba(132, 204, 22, 0.1) 30%,
-                rgba(234, 179, 8, 0.08) 60%, 
-                transparent 100%)`
-            }}
-          />
-        </div>
-        
-        <div className="max-w-7xl mx-auto px-6 py-20">
-          <div className="flex flex-col items-center justify-center min-h-[50vh]">
-            <AlertCircle className="w-12 h-12 text-red-400 mb-4" />
-            <p className="text-xl text-red-400 mb-4">Error loading team data</p>
-            <p className="text-gray-300 mb-6 text-center max-w-md">{error}</p>
-            <button
-              onClick={handleRetry}
-              className="bg-gradient-to-r from-green-500 to-lime-500 hover:from-green-600 hover:to-lime-600 text-white px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg shadow-green-500/30"
-            >
-              Try Again
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white pt-20 overflow-hidden">
@@ -197,12 +111,6 @@ const TeamPage = () => {
             </div>
           ))}
         </div>
-
-        {teamMembers.length === 0 && !loading && !error && (
-          <div className="text-center py-12">
-            <p className="text-gray-400 text-lg">No team members found.</p>
-          </div>
-        )}
       </div>
     </div>
   );

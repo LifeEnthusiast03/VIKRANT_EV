@@ -143,6 +143,9 @@ const ServiceBooking = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 pt-24 px-4 overflow-hidden">
+      {/* Brand Title */}
+ 
+      
       {/* Enhanced Dynamic Background */}
       <div className="fixed inset-0 opacity-30 pointer-events-none">
         <div 

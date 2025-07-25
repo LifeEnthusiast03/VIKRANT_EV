@@ -320,7 +320,7 @@ const Navbar = ({ currentSection, setCurrentSection }) => {
                        hover:scale-105 transform transition duration-300 cursor-pointer whitespace-nowrap animate-pulse"
             onClick={() => setCurrentSection('home')}
           >
-            HAQUENICH
+            VIKRANT EV
           </div>
 
           {/* Navigation Buttons */}
