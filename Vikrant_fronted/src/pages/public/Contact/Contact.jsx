@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Send, Mail, Phone, MapPin, CheckCircle, AlertCircle } from 'lucide-react';
-import contactService from '../../services/contactservice.js'
+import contactService from '../../../services/contactservice.js'
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({

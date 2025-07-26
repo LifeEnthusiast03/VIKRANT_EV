@@ -1,0 +1,198 @@
+# Environment Variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build outputs
+build/
+dist/
+out/
+.next/
+.nuxt/
+.vuepress/dist/
+.serverless/
+
+# Cache directories
+.cache/
+.parcel-cache/
+.npm/
+.yarn/cache/
+.pnpm-store/
+
+# Logs
+logs/
+*.log
+*.log.*
+lerna-debug.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+.nyc_output/
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+target/
+.gradle/
+build/
+
+# .NET
+bin/
+obj/
+*.exe
+*.dll
+*.pdb
+*.cache
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Ruby
+*.gem
+*.rbc
+/.config
+/coverage/
+/InstalledFiles
+/pkg/
+/spec/reports/
+/spec/examples.txt
+/test/tmp/
+/test/version_tmp/
+/tmp/
+.bundle/
+vendor/bundle/
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work
+
+# Rust
+target/
+Cargo.lock
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+
+# Security and sensitive files
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+secrets.json
+config/secrets.yml
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+terraform.tfvars
+*.tfvars
+
+# AWS
+.aws/
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+
+# Local development
+.local/
+.vscode/settings.json
+
+# Testing
+.jest/
+.cypress/
+e2e/results/
+test-results/
+playwright-report/
+
+# Misc
+*.orig
+.sass-cache/
+.connect.lock
+.grunt/
+bower_components/

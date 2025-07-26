@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Mail } from 'lucide-react';
-import { teamdata } from '../../../constant/teamdata';
+import { teamdata } from '../../../../constant/teamdata.js';
 
 const TeamPage = () => {
   const [teamMembers, setTeamMembers] = useState([]);
