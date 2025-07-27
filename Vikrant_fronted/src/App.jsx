@@ -36,7 +36,7 @@ const App = () => {
     <div className="relative">
       <Navbar currentSection={currentSection} setCurrentSection={setCurrentSection} />
       {renderCurrentSection()}
-      <ElectricBikeChatbot/>
+      {/* <ElectricBikeChatbot/> */}
     </div>
   );
 };
