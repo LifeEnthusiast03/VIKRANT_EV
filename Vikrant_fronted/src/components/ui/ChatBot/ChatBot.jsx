@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircle, Send, X, Loader2, AlertCircle } from 'lucide-react';
+// electric bike chatbot
 
 const ElectricBikeChatbot = () => {
   const [chatOpen, setChatOpen] = useState(false);
