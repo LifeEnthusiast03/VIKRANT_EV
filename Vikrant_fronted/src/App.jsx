@@ -24,15 +24,10 @@ import Dashboard from './pages/private/Dashboard/dashboard';
 import Navbar from './components/common/Navbar/navbar';
 import ElectricBikeChatbot from './components/ui/Bikebot/bikechatbot';
 import { ROUTES } from './utils/constants';
+import Layout from './Layout/layout';
 
 // Layout component for pages that need navbar
-const Layout = ({ children, showChatbot = true }) => (
-  <div className="relative">
-    <Navbar />
-    {children}
-    {showChatbot && <ElectricBikeChatbot />}
-  </div>
-);
+
 
 const App = () => {
   return (
@@ -42,11 +37,19 @@ const App = () => {
           {/* Auth Routes */}
           <Route 
             path={ROUTES.LOGIN} 
-            element={<Login />} 
+            element={
+              <AuthGuard>
+                <Login />
+              </AuthGuard>
+            } 
           />
           <Route 
             path={ROUTES.SETUP_PASSWORD} 
-            element={<PasswordSetup />} 
+            element={
+              <AuthGuard>
+                <PasswordSetup />
+              </AuthGuard>
+            } 
           />
 
           {/* Public Routes with Navbar */}

@@ -4,7 +4,6 @@ import dotenv from 'dotenv'
 import {createServer} from 'http'
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
-import teamroute from './route/teamroute.js'
 import contactroute from './route/contactroute.js'
 import chatroute from './route/chatroute.js'
 import connectDb from './config/database.js'
@@ -63,7 +62,6 @@ app.use(passport.session());
 
 
 app.use('/auth',authroute);
-app.use('/api/team',teamroute)
 app.use('/api/contact-us',contactroute);
 app.use('/api/chat',chatroute);
 //home route

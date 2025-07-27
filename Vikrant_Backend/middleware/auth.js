@@ -26,3 +26,34 @@ export const needsPasswordSetup = (req, res, next) => {
     }
   });
 };
+
+export const cheakLogin = (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
+    if (err) {
+      return res.status(500).json({ message: 'Authentication error' });
+    }
+    
+    if (!user) {
+      return res.status(401).json({ 
+        message: info.message || 'Invalid credentials',
+        hint: 'Remember to register with Google first if you don\'t have an account'
+      });
+    }
+
+    req.login(user, (err) => {
+      if (err) {
+        return res.status(500).json({ message: 'Login failed' });
+      }
+      
+      res.json({
+        message: 'Login successful',
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          profilePicture: user.profilePicture
+        }
+      });
+    });
+  })(req, res, next);
+}
