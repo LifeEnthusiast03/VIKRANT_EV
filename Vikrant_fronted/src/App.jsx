@@ -8,7 +8,7 @@ import ContactPage from './pages/public/Contact/Contact';
 import ProjectPage from './pages/public/Contact/Project/Project';
 import ServiceBooking from './pages/private/service/service';
 import Dashboard from './pages/private/Dashboard/dashboard';
-import ElectricBikeChatbot from './components/ui/Chatbot/chatbot'
+import ElectricBikeChatbot from './components/ui/Chatbot/chatbot.jsx'
 
 
 
