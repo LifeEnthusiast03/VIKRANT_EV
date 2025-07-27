@@ -42,6 +42,12 @@ passport.use(new GoogleStrategy({
   callbackURL: "/auth/google/callback"
 }, async (accessToken, refreshToken, profile, done) => {
   try {
+    console.log('Google Strategy - Profile received:', {
+      id: profile.id,
+      email: profile.emails[0]?.value,
+      name: profile.displayName
+    });
+
     // Check if user already exists with completed registration
     let user = await User.findOne({ 
       googleId: profile.id,
@@ -49,6 +55,7 @@ passport.use(new GoogleStrategy({
     });
     
     if (user) {
+      console.log('Existing user found, logging in');
       // Existing user - login
       user.lastLogin = new Date();
       await user.save();
@@ -62,9 +69,10 @@ passport.use(new GoogleStrategy({
     });
     
     if (user) {
+      console.log('User found by email, linking Google account');
       // Link Google account to existing user
       user.googleId = profile.id;
-      user.profilePicture = profile.photos[0].value;
+      user.profilePicture = profile.photos[0]?.value;
       user.lastLogin = new Date();
       await user.save();
       return done(null, user);
@@ -77,23 +85,25 @@ passport.use(new GoogleStrategy({
     });
     
     if (user) {
+      console.log('Continuing existing incomplete registration');
       // Continue existing incomplete registration
       const tempUser = {
         _id: user._id,
         email: profile.emails[0].value,
         name: profile.displayName,
-        profilePicture: profile.photos[0].value,
+        profilePicture: profile.photos[0]?.value,
         needsPasswordSetup: true,
         isNewRegistration: false
       };
       return done(null, tempUser);
     }
     
+    console.log('Creating new temporary registration');
     // New registration - create temporary user
     const tempUser = {
       email: profile.emails[0].value,
       name: profile.displayName,
-      profilePicture: profile.photos[0].value,
+      profilePicture: profile.photos[0]?.value,
       googleId: profile.id,
       needsPasswordSetup: true,
       isNewRegistration: true
@@ -109,25 +119,56 @@ passport.use(new GoogleStrategy({
 
 // Serialize user for session
 passport.serializeUser((user, done) => {
+  console.log('Serializing user:', user);
   if (user.needsPasswordSetup) {
-    // For users needing password setup, store the temp data
-    done(null, { tempUser: user, needsPasswordSetup: true });
+    // For users needing password setup, store the temp data with a consistent identifier
+    done(null, { 
+      tempUser: user, 
+      needsPasswordSetup: true,
+      type: 'incomplete_registration'
+    });
   } else {
-    done(null, user._id);
+    done(null, { 
+      userId: user._id.toString(),
+      type: 'complete_user'
+    });
   }
 });
 
 // Deserialize user from session
 passport.deserializeUser(async (data, done) => {
   try {
-    if (data.needsPasswordSetup) {
-      // Return temp user data
-      done(null, data.tempUser);
-    } else {
-      const user = await User.findById(data);
+    console.log('Deserializing user data:', data);
+    
+    if (data.type === 'incomplete_registration' && data.needsPasswordSetup) {
+      // Return temp user data with consistent structure
+      const tempUser = {
+        ...data.tempUser,
+        needsPasswordSetup: true
+      };
+      console.log('Returning temp user:', tempUser);
+      done(null, tempUser);
+    } else if (data.type === 'complete_user') {
+      const user = await User.findById(data.userId);
+      if (!user) {
+        return done(new Error('User not found'), null);
+      }
+      console.log('Returning complete user:', user);
       done(null, user);
+    } else {
+      // Fallback for old session format or direct user ID
+      if (typeof data === 'string') {
+        const user = await User.findById(data);
+        done(null, user);
+      } else if (data.needsPasswordSetup) {
+        // Legacy format
+        done(null, data.tempUser);
+      } else {
+        done(new Error('Invalid session data'), null);
+      }
     }
   } catch (error) {
+    console.error('Deserialize error:', error);
     done(error, null);
   }
 });

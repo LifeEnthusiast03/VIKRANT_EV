@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 const userSchema = new mongoose.Schema({
   googleId: {
     type: String,
-    required: true,
+    sparse: true,  
     unique: true
   },
   email: {
@@ -16,7 +16,9 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true // All users must have password after Google registration
+    required: function() {
+      return this.registrationComplete;
+    }
   },
   name: {
     type: String,
@@ -37,7 +39,7 @@ const userSchema = new mongoose.Schema({
   },
   provider: {
     type: String,
-    default: 'google' // All users start with Google
+    default: 'google' 
   },
   isActive: {
     type: Boolean,

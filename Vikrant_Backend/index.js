@@ -18,7 +18,29 @@ const server = createServer(app);
 
 const  PORT = process.env.PORT||5000;
 //middleware
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+// Add request logging middleware
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path}`, {
+    authenticated: req.isAuthenticated ? req.isAuthenticated() : false,
+    user: req.user ? { 
+      id: req.user._id, 
+      email: req.user.email, 
+      needsPasswordSetup: req.user.needsPasswordSetup,
+      isNewRegistration: req.user.isNewRegistration 
+    } : null,
+    sessionID: req.sessionID,
+    userAgent: req.get('User-Agent') ? req.get('User-Agent').substring(0, 50) + '...' : 'Unknown'
+  });
+  next();
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -27,7 +49,8 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({
-    mongoUrl: process.env.MONGODB_URI || 'mongodb://localhost:27017/your-bike-db'
+    mongoUrl: process.env.MONGODB_URI || 'mongodb://localhost:27017/your-bike-db',
+    touchAfter: 24 * 3600 // Lazy session update
   }),
   cookie: {
     secure: process.env.NODE_ENV === 'production',
