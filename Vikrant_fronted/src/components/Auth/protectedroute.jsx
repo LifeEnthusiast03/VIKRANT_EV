@@ -6,17 +6,28 @@ import LoadingSpinner from '../common/Loadingspinner/loadingspinner';
 
 const ProtectedRoute = ({ 
   children, 
-  redirectTo = ROUTES.LOGIN 
+  redirectTo = ROUTES.LOGIN,
+  requireCompleteRegistration = true 
 }) => {
-  const { user, loading } = useAuth();
+  const { 
+    user, 
+    loading, 
+    isAuthenticated, 
+    needsPasswordSetup 
+  } = useAuth();
   const location = useLocation();
 
   if (loading) {
     return <LoadingSpinner />;
   }
 
-  if (!user) {
+  if (!isAuthenticated) {
     return <Navigate to={redirectTo} state={{ from: location }} replace />;
+  }
+
+  // If user needs to complete registration and this route requires it
+  if (requireCompleteRegistration && needsPasswordSetup) {
+    return <Navigate to={ROUTES.SETUP_PASSWORD} replace />;
   }
 
   return children;

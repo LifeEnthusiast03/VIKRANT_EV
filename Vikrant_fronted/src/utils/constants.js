@@ -1,4 +1,4 @@
-export const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+export const API_BASE_URL = 'http://localhost:5000';
 
 export const ROUTES = {
   HOME: '/',
@@ -8,7 +8,7 @@ export const ROUTES = {
   DASHBOARD: '/dashboard',
   SERVICE: '/service',
   LOGIN: '/login',
-  SETUP_PASSWORD: '/setup-password'
+  SETUP_PASSWORD: '/setup-password',
 };
 
 export const AUTH_MESSAGES = {
@@ -17,5 +17,16 @@ export const AUTH_MESSAGES = {
   REGISTRATION_SUCCESS: 'Registration completed successfully',
   PASSWORD_TOO_SHORT: 'Password must be at least 6 characters long',
   PASSWORDS_DONT_MATCH: 'Passwords do not match',
-  NETWORK_ERROR: 'Network error occurred'
+  NETWORK_ERROR: 'Network error occurred. Please check your connection.',
+  INVALID_CREDENTIALS: 'Invalid email or password',
+  REGISTRATION_INCOMPLETE: 'Please complete your registration by setting up a password',
+  SESSION_EXPIRED: 'Your session has expired. Please log in again.'
+};
+
+export const PASSWORD_REQUIREMENTS = {
+  MIN_LENGTH: 6,
+  REQUIRE_UPPERCASE: false,
+  REQUIRE_LOWERCASE: false,
+  REQUIRE_NUMBERS: false,
+  REQUIRE_SPECIAL_CHARS: false
 };

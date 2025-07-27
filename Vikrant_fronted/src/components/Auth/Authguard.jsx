@@ -1,40 +1,50 @@
+
+
 import React, { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import { authService } from '../../services/authService';
 import { ROUTES } from '../../utils/constants';
 import LoadingSpinner from '../common/Loadingspinner/loadingspinner';
 
-const AuthGuard = ({ children }) => {
-  const { user, loading } = useAuth();
-  const [checkingRegistration, setCheckingRegistration] = useState(false);
-  const [needsPasswordSetup, setNeedsPasswordSetup] = useState(false);
+const AuthGuard = ({ children, requirePasswordSetup = false }) => {
+  const { 
+    user, 
+    loading, 
+    needsPasswordSetup, 
+    isAuthenticated
+  } = useAuth();
+  const location = useLocation();
 
-  useEffect(() => {
-    if (!loading && !user) {
-      checkRegistrationStatus();
-    }
-  }, [user, loading]);
-
-  const checkRegistrationStatus = async () => {
-    try {
-      setCheckingRegistration(true);
-      const data = await authService.checkRegistrationStatus();
-      setNeedsPasswordSetup(data.needsPasswordSetup);
-    } catch (error) {
-      console.error('Registration status check failed:', error);
-      setNeedsPasswordSetup(false);
-    } finally {
-      setCheckingRegistration(false);
-    }
-  };
-
-  if (loading || checkingRegistration) {
+  // Show loading spinner while auth is being determined
+  if (loading) {
     return <LoadingSpinner />;
   }
 
-  if (!user && needsPasswordSetup) {
-    return <Navigate to={ROUTES.SETUP_PASSWORD} replace />;
+  // For login page
+  if (location.pathname === ROUTES.LOGIN) {
+    if (isAuthenticated && !needsPasswordSetup) {
+      return <Navigate to={ROUTES.HOME} replace />;
+    }
+    if (isAuthenticated && needsPasswordSetup) {
+      return <Navigate to={ROUTES.SETUP_PASSWORD} replace />;
+    }
+    return children;
+  }
+
+  // For setup password page
+  if (location.pathname === ROUTES.SETUP_PASSWORD) {
+    if (!isAuthenticated && !needsPasswordSetup) {
+      return <Navigate to={ROUTES.LOGIN} replace />;
+    }
+    if (isAuthenticated && !needsPasswordSetup) {
+      return <Navigate to={ROUTES.HOME} replace />;
+    }
+    return children;
+  }
+
+  // For other protected routes that require password setup
+  if (requirePasswordSetup && !needsPasswordSetup) {
+    return <Navigate to={ROUTES.LOGIN} replace />;
   }
 
   return children;
