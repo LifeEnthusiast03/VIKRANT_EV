@@ -1,9 +1,10 @@
 import { runInNewContext } from 'vm';
 import User from '../models/usermodel.js';
+import { log } from 'console';
 
 const handleCallbackUrl = (req,res)=>{
     try {
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+      const frontendUrl = process.env.FRONTEND_URL || 'https://vikrant-ev.vercel.app';
       
       // Check if user needs password setup (new registration)
       if (req.user && req.user.needsPasswordSetup) {
@@ -11,6 +12,10 @@ const handleCallbackUrl = (req,res)=>{
         // Redirect to frontend password setup page
         res.redirect(`${frontendUrl}/setup-password`);
       } else if (req.user) {
+        console.log(req.user.name);
+        console.log(req.user.email);
+        
+        
         console.log('Redirecting to dashboard - existing user');
         // Existing user - redirect to frontend dashboard  
         res.redirect(`${frontendUrl}/`);

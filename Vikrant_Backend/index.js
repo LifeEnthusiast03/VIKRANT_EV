@@ -18,7 +18,7 @@ const server = createServer(app);
 const  PORT = process.env.PORT||5000;
 //middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: process.env.FRONTEND_URL || 'https://vikrant-ev.vercel.app',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -52,9 +52,10 @@ app.use(session({
     touchAfter: 24 * 3600 // Lazy session update
   }),
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
+    secure: process.env.NODE_ENV === 'production', // Only HTTPS in production
     httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax' // For cross-origin
   }
 }));
 app.use(passport.initialize());
@@ -71,7 +72,7 @@ app.get('/',(req,res)=>{
 
 app.get('/dashboard', (req, res) => {
   if (!req.isAuthenticated() || req.user.needsPasswordSetup) {
-    return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/login`);
+    return res.redirect(`${process.env.FRONTEND_URL || 'https://vikrant-ev.vercel.app'}/login`);
   }
   
   res.json({
