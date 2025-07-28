@@ -151,48 +151,6 @@ const handleCheakRegistration = (req, res) => {
   }
 }
 
-const handleLogin = async(req,res)=>{
-  try{    const {email,password}=req.body;
-           const user = await User.findOne({email});
-        if(!user){
-            return res.status(401).json({
-                  success:false,
-                  message:'No user Found'
-            })
-        }
-        if (!user.registrationComplete) {
-        return res.status(403).json({ 
-          success:false,
-          message: 'Please complete your registration first',
-        });
-      }
-      const isValidPassword = await user.comparePassword(password)
-      if(!isValidPassword){
-        return res.status(404).json({
-          success:false,
-          message:"Password incorrect"
-        })
-      }
-        user.lastLogin = new Date();
-        await user.save();
-        res.status(201).json({
-              success:true,
-              message: 'Login successful',
-              user: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                profilePicture: user.profilePicture
-              }
-        })
-  }
-  catch(error){
-          console.error("Login error",error);
-          res.status(400).json({
-            success:false,
-            message:'Internal server error'
-          })
-  }
-}
+
 
 export {handleCallbackUrl,handleCompleRegistationWithPassword,handleLogout,handleMe,handleCheakRegistration}

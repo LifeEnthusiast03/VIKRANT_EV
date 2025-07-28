@@ -31,7 +31,7 @@ export const needsPasswordSetup = (req, res, next) => {
   });
 };
 
-export const cheakLogin = (req, res, next) => {
+export const handleLogin = (req, res, next) => {
   console.log('Login attempt:', req.body);
   
   passport.authenticate('local', (err, user, info) => {
