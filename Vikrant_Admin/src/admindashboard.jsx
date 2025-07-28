@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import { Search, Filter, CheckCircle, XCircle, Eye, Trash2, User, Mail, Phone, Calendar, MessageSquare, Settings, Bell, Package, Activity, Users, FileText, Wrench, Clock, MapPin, BarChart3, TrendingUp, Plus, Database } from 'lucide-react';
+import { Search,AlertCircle,ArrowUpDown, Filter, CheckCircle, XCircle, Eye, Trash2, User, Mail, Phone, Calendar, MessageSquare, Settings, Bell, Package, Activity, Users, FileText, Wrench, Clock, MapPin, BarChart3, TrendingUp, Plus, Database } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
+
+// Mock analytics data
 
 // Utility function for className merging (cn)
 const cn = (...classes) => {
@@ -14,7 +17,7 @@ const mockContactRequests = [
     email: "john.doe@email.com",
     phone: "+1234567890",
     subject: "Battery Issue",
-    message: "My bike battery is not charging properly. Can you help?",
+    message: "My bike battery is not charging properly. Can you help? I've tried different chargers but the issue persists. The battery seems to drain very quickly and doesn't hold charge for more than 30 minutes.",
     date: "2025-01-20",
     status: "pending",
     priority: "high"
@@ -25,7 +28,7 @@ const mockContactRequests = [
     email: "sarah.w@email.com",
     phone: "+1987654321",
     subject: "Service Request",
-    message: "Need maintenance service for my electric bike.",
+    message: "Need maintenance service for my electric bike. It's been 6 months since the last service and I want to ensure everything is working properly before the summer season.",
     date: "2025-01-19",
     status: "resolved",
     priority: "medium"
@@ -36,9 +39,42 @@ const mockContactRequests = [
     email: "mike.j@email.com",
     phone: "+1122334455",
     subject: "Warranty Claim",
-    message: "I want to claim warranty for my bike's motor.",
+    message: "I want to claim warranty for my bike's motor. The motor started making unusual noises after 3 months of purchase. I have all the purchase documents ready.",
     date: "2025-01-18",
     status: "pending",
+    priority: "high"
+  },
+  {
+    id: 4,
+    name: "Emily Chen",
+    email: "emily.chen@email.com",
+    phone: "+1555666777",
+    subject: "Spare Parts Inquiry",
+    message: "Looking for replacement brake pads for my e-bike model XR-2000. Could you please provide availability and pricing information?",
+    date: "2025-01-17",
+    status: "in-progress",
+    priority: "low"
+  },
+  {
+    id: 5,
+    name: "David Brown",
+    email: "d.brown@email.com",
+    phone: "+1888999000",
+    subject: "Software Update",
+    message: "My bike's display shows an error message about firmware update. Can you guide me through the update process or schedule a service appointment?",
+    date: "2025-01-16",
+    status: "pending",
+    priority: "medium"
+  },
+  {
+    id: 6,
+    name: "Lisa Martinez",
+    email: "lisa.m@email.com",
+    phone: "+1333444555",
+    subject: "Charging Issue",
+    message: "The charging port seems loose and the charger doesn't connect properly. Sometimes it charges, sometimes it doesn't. This is affecting my daily commute.",
+    date: "2025-01-15",
+    status: "resolved",
     priority: "high"
   }
 ];
@@ -55,7 +91,9 @@ const mockServiceBookings = [
     preferredDate: "2025-01-25",
     preferredTime: "10:00 AM",
     status: "confirmed",
-    notes: "Regular maintenance check"
+    notes: "Regular maintenance check",
+    problemType: "maintenance",
+    bookingTime: "2025-01-20T09:30:00"
   },
   {
     id: 2,
@@ -67,7 +105,65 @@ const mockServiceBookings = [
     preferredDate: "2025-01-24",
     preferredTime: "2:00 PM",
     status: "pending",
-    notes: "Battery not holding charge"
+    notes: "Battery not holding charge",
+    problemType: "electrical",
+    bookingTime: "2025-01-22T14:15:00"
+  },
+  {
+    id: 3,
+    customerName: "Carol Davis",
+    email: "carol.d@email.com",
+    phone: "+1333222111",
+    bikeModel: "Storm Elite",
+    serviceType: "Brake Repair",
+    preferredDate: "2025-01-23",
+    preferredTime: "11:30 AM",
+    status: "completed",
+    notes: "Front brake pads worn out",
+    problemType: "mechanical",
+    bookingTime: "2025-01-18T16:45:00"
+  },
+  {
+    id: 4,
+    customerName: "David Wilson",
+    email: "david.w@email.com",
+    phone: "+1222111000",
+    bikeModel: "Volt Max",
+    serviceType: "Tire Replacement",
+    preferredDate: "2025-01-26",
+    preferredTime: "3:30 PM",
+    status: "cancelled",
+    notes: "Customer changed mind",
+    problemType: "mechanical",
+    bookingTime: "2025-01-21T11:20:00"
+  },
+  {
+    id: 5,
+    customerName: "Eva Martinez",
+    email: "eva.m@email.com",
+    phone: "+1111000999",
+    bikeModel: "Phoenix Rider",
+    serviceType: "Motor Check",
+    preferredDate: "2025-01-27",
+    preferredTime: "9:00 AM",
+    status: "pending",
+    notes: "Strange noise from motor",
+    problemType: "electrical",
+    bookingTime: "2025-01-23T08:30:00"
+  },
+  {
+    id: 6,
+    customerName: "Frank Johnson",
+    email: "frank.j@email.com",
+    phone: "+1000999888",
+    bikeModel: "Thunder X1",
+    serviceType: "Full Service",
+    preferredDate: "2025-01-28",
+    preferredTime: "1:00 PM",
+    status: "confirmed",
+    notes: "6-month service due",
+    problemType: "maintenance",
+    bookingTime: "2025-01-19T13:45:00"
   }
 ];
 
@@ -148,6 +244,7 @@ const mockBikes = [
 ];
 
 // Mock analytics data
+// Mock analytics data
 const mockAnalytics = {
   totalRequests: 145,
   pendingRequests: 23,
@@ -162,6 +259,17 @@ const mockAnalytics = {
   bikesInMaintenance: 15,
   bikesSold: 7
 };
+
+// Monthly growth data for the chart
+const monthlyGrowthData = [
+  { month: 'Jan', growth: 5.2, requests: 89, bookings: 34 },
+  { month: 'Feb', growth: 7.8, requests: 96, bookings: 41 },
+  { month: 'Mar', growth: 8.5, requests: 104, bookings: 48 },
+  { month: 'Apr', growth: 10.2, requests: 115, bookings: 53 },
+  { month: 'May', growth: 11.8, requests: 129, bookings: 59 },
+  { month: 'Jun', growth: 12.5, requests: 145, bookings: 67 }
+];
+
 
 const BikeRegistrationComponent = () => {
   const [formData, setFormData] = useState({
@@ -228,6 +336,7 @@ const BikeRegistrationComponent = () => {
 
   return (
     <div className="bg-gradient-to-br from-green-950/60 to-gray-950/80 backdrop-blur-xl border border-green-800/50 rounded-xl shadow-lg shadow-green-900/30 relative overflow-hidden">
+      
       {/* Background Effects */}
       <div className="absolute inset-0 bg-gradient-to-br from-green-600/10 to-emerald-600/10 opacity-60" />
       
@@ -854,19 +963,36 @@ const FadeInDiv = ({
     </div>
   );
 };
-
+//Contact Requests Component
 const ContactRequestsComponent = () => {
   const [requests, setRequests] = useState(mockContactRequests);
-  const [selectedRequest, setSelectedRequest] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [priorityFilter, setPriorityFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('date');
 
-  const filteredRequests = requests.filter(request => {
-    const matchesSearch = request.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         request.subject.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || request.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+  const filteredRequests = requests
+    .filter(request => {
+      const matchesSearch = request.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           request.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           request.email.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus = statusFilter === 'all' || request.status === statusFilter;
+      const matchesPriority = priorityFilter === 'all' || request.priority === priorityFilter;
+      return matchesSearch && matchesStatus && matchesPriority;
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case 'date':
+          return new Date(b.date) - new Date(a.date);
+        case 'priority':
+          const priorityOrder = { high: 3, medium: 2, low: 1 };
+          return priorityOrder[b.priority] - priorityOrder[a.priority];
+        case 'name':
+          return a.name.localeCompare(b.name);
+        default:
+          return 0;
+      }
+    });
 
   const updateRequestStatus = (id, newStatus) => {
     setRequests(requests.map(req => 
@@ -876,25 +1002,51 @@ const ContactRequestsComponent = () => {
 
   const deleteRequest = (id) => {
     setRequests(requests.filter(req => req.id !== id));
-    setSelectedRequest(null);
   };
 
   const getPriorityColor = (priority) => {
     switch (priority) {
-      case 'high': return 'text-red-400 bg-red-950/60 border border-red-800/50';
-      case 'medium': return 'text-yellow-400 bg-yellow-950/60 border border-yellow-800/50';
-      case 'low': return 'text-green-400 bg-green-950/60 border border-green-800/50';
-      default: return 'text-gray-400 bg-gray-950/60 border border-gray-800/50';
+      case 'high': return 'text-red-300 bg-red-950/80 border-red-700/60';
+      case 'medium': return 'text-yellow-300 bg-yellow-950/80 border-yellow-700/60';
+      case 'low': return 'text-green-300 bg-green-950/80 border-green-700/60';
+      default: return 'text-gray-300 bg-gray-950/80 border-gray-700/60';
     }
   };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'pending': return 'text-orange-400 bg-orange-950/60 border border-orange-800/50';
-      case 'resolved': return 'text-green-400 bg-green-950/60 border border-green-800/50';
-      case 'in-progress': return 'text-blue-400 bg-blue-950/60 border border-blue-800/50';
-      default: return 'text-gray-400 bg-gray-950/60 border border-gray-800/50';
+      case 'pending': return 'text-orange-300 bg-orange-950/80 border-orange-700/60';
+      case 'resolved': return 'text-green-300 bg-green-950/80 border-green-700/60';
+      case 'in-progress': return 'text-blue-300 bg-blue-950/80 border-blue-700/60';
+      default: return 'text-gray-300 bg-gray-950/80 border-gray-700/60';
     }
+  };
+
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'pending': return <Clock className="w-4 h-4" />;
+      case 'resolved': return <CheckCircle className="w-4 h-4" />;
+      case 'in-progress': return <AlertCircle className="w-4 h-4" />;
+      default: return <Clock className="w-4 h-4" />;
+    }
+  };
+
+  const getPriorityIcon = (priority) => {
+    switch (priority) {
+      case 'high': return '🔴';
+      case 'medium': return '🟡';
+      case 'low': return '🟢';
+      default: return '⚪';
+    }
+  };
+
+  // Statistics
+  const stats = {
+    total: requests.length,
+    pending: requests.filter(r => r.status === 'pending').length,
+    resolved: requests.filter(r => r.status === 'resolved').length,
+    inProgress: requests.filter(r => r.status === 'in-progress').length,
+    highPriority: requests.filter(r => r.priority === 'high').length
   };
 
   return (
@@ -903,28 +1055,50 @@ const ContactRequestsComponent = () => {
       <div className="absolute inset-0 bg-gradient-to-br from-green-600/10 to-emerald-600/10 opacity-60" />
       
       <div className="relative z-10">
+        {/* Header */}
         <div className="p-6 border-b border-green-800/50">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full flex items-center justify-center shadow-lg shadow-green-500/50 border border-green-500/30">
-                <MessageSquare className="w-6 h-6 text-white" />
+          <div className="flex flex-col space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full flex items-center justify-center shadow-lg shadow-green-500/50 border border-green-500/30">
+                  <MessageSquare className="w-7 h-7 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-3xl font-bold bg-gradient-to-r from-green-300 to-emerald-300 bg-clip-text text-transparent">CONTACT REQUESTS</h1>
+                  <p className="text-green-400">CUSTOMER INQUIRIES & SUPPORT DASHBOARD</p>
+                </div>
               </div>
-              <div>
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-green-300 to-emerald-300 bg-clip-text text-transparent">CONTACT REQUESTS</h2>
-                <p className="text-green-400 text-sm">CUSTOMER INQUIRIES & SUPPORT</p>
+              
+              {/* Quick Stats */}
+              <div className="flex space-x-4">
+                <div className="text-center p-3 bg-green-950/40 rounded-lg border border-green-800/30">
+                  <div className="text-2xl font-bold text-green-300">{stats.total}</div>
+                  <div className="text-xs text-green-500">TOTAL</div>
+                </div>
+                <div className="text-center p-3 bg-orange-950/40 rounded-lg border border-orange-800/30">
+                  <div className="text-2xl font-bold text-orange-300">{stats.pending}</div>
+                  <div className="text-xs text-orange-500">PENDING</div>
+                </div>
+                <div className="text-center p-3 bg-red-950/40 rounded-lg border border-red-800/30">
+                  <div className="text-2xl font-bold text-red-300">{stats.highPriority}</div>
+                  <div className="text-xs text-red-500">HIGH PRIORITY</div>
+                </div>
               </div>
             </div>
-            <div className="flex space-x-3">
+
+            {/* Filters and Search */}
+            <div className="flex flex-wrap items-center space-x-4 space-y-2">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-green-400 w-4 h-4" />
                 <input
                   type="text"
-                  placeholder="Search requests..."
+                  placeholder="Search by name, subject, or email..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 bg-green-950/50 border border-green-700/50 rounded-lg text-green-200 placeholder-green-500 focus:border-green-500 focus:ring-2 focus:ring-green-500/30 transition-all"
+                  className="pl-10 pr-4 py-2 w-80 bg-green-950/50 border border-green-700/50 rounded-lg text-green-200 placeholder-green-500 focus:border-green-500 focus:ring-2 focus:ring-green-500/30 transition-all"
                 />
               </div>
+              
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
@@ -935,137 +1109,173 @@ const ContactRequestsComponent = () => {
                 <option value="resolved">Resolved</option>
                 <option value="in-progress">In Progress</option>
               </select>
+
+              <select
+                value={priorityFilter}
+                onChange={(e) => setPriorityFilter(e.target.value)}
+                className="px-4 py-2 bg-green-950/50 border border-green-700/50 rounded-lg text-green-200 focus:border-green-500 focus:ring-2 focus:ring-green-500/30 transition-all"
+              >
+                <option value="all">All Priority</option>
+                <option value="high">High Priority</option>
+                <option value="medium">Medium Priority</option>
+                <option value="low">Low Priority</option>
+              </select>
+
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-4 py-2 bg-green-950/50 border border-green-700/50 rounded-lg text-green-200 focus:border-green-500 focus:ring-2 focus:ring-green-500/30 transition-all"
+              >
+                <option value="date">Sort by Date</option>
+                <option value="priority">Sort by Priority</option>
+                <option value="name">Sort by Name</option>
+              </select>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6">
-          {/* Requests List */}
+        {/* Requests Table */}
+        <div className="p-6">
           <div className="space-y-4">
             {filteredRequests.map((request) => (
               <div
                 key={request.id}
-                className={`p-4 bg-gradient-to-br from-green-950/40 to-gray-950/60 backdrop-blur-xl border rounded-lg cursor-pointer transition-all duration-300 hover:shadow-lg hover:shadow-green-500/20 ${
-                  selectedRequest?.id === request.id 
-                    ? 'border-green-500/70 bg-gradient-to-br from-green-600/20 to-emerald-600/20' 
-                    : 'border-green-800/30 hover:border-green-600/50'
-                }`}
-                onClick={() => setSelectedRequest(request)}
+                className="bg-gradient-to-br from-green-950/40 to-gray-950/60 backdrop-blur-xl border border-green-800/30 rounded-lg p-6 hover:border-green-600/50 transition-all duration-300 hover:shadow-lg hover:shadow-green-500/20"
               >
-                <div className="flex justify-between items-start mb-3">
-                  <h3 className="font-semibold text-green-200">{request.name}</h3>
-                  <div className="flex space-x-2">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(request.priority)}`}>
-                      {request.priority.toUpperCase()}
-                    </span>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(request.status)}`}>
-                      {request.status.toUpperCase()}
-                    </span>
+                {/* Header Row */}
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-4 space-y-3 lg:space-y-0">
+                  <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-2">
+                      <User className="w-5 h-5 text-green-400" />
+                      <span className="font-bold text-xl text-green-200">{request.name}</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-2xl">{getPriorityIcon(request.priority)}</span>
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold border ${getPriorityColor(request.priority)}`}>
+                        {request.priority.toUpperCase()} PRIORITY
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-2">
+                      {getStatusIcon(request.status)}
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold border ${getStatusColor(request.status)}`}>
+                        {request.status.toUpperCase()}
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-2 text-green-400">
+                      <Calendar className="w-4 h-4" />
+                      <span className="text-sm font-medium">{request.date}</span>
+                    </div>
                   </div>
                 </div>
-                <p className="text-sm text-green-400 mb-2">{request.subject}</p>
-                <p className="text-xs text-green-500 flex items-center">
-                  <Clock className="w-3 h-3 mr-1" />
-                  {request.date}
-                </p>
+
+                {/* Contact Info Row */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div className="flex items-center space-x-3 p-3 bg-green-950/30 rounded-lg border border-green-800/30">
+                    <Mail className="w-5 h-5 text-green-400" />
+                    <span className="text-green-300 font-medium">{request.email}</span>
+                  </div>
+                  <div className="flex items-center space-x-3 p-3 bg-green-950/30 rounded-lg border border-green-800/30">
+                    <Phone className="w-5 h-5 text-green-400" />
+                    <span className="text-green-300 font-medium">{request.phone}</span>
+                  </div>
+                </div>
+
+                {/* Subject and Message */}
+                <div className="space-y-4">
+                  <div className="p-4 bg-green-950/30 rounded-lg border border-green-800/30">
+                    <div className="flex items-center space-x-3 mb-2">
+                      <MessageSquare className="w-5 h-5 text-green-400" />
+                      <h3 className="font-bold text-lg text-green-200">{request.subject}</h3>
+                    </div>
+                    <p className="text-green-300 leading-relaxed">{request.message}</p>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex flex-wrap items-center justify-end space-x-3 mt-4 pt-4 border-t border-green-800/30">
+                  {request.status === 'pending' && (
+                    <button
+                      onClick={() => updateRequestStatus(request.id, 'in-progress')}
+                      className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg shadow-blue-600/30 border border-blue-500/50 font-medium"
+                    >
+                      START PROGRESS
+                    </button>
+                  )}
+                  
+                  {request.status !== 'resolved' && (
+                    <button
+                      onClick={() => updateRequestStatus(request.id, 'resolved')}
+                      className="px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all shadow-lg shadow-green-600/30 border border-green-500/50 font-medium flex items-center space-x-2"
+                    >
+                      <CheckCircle className="w-4 h-4" />
+                      <span>RESOLVE</span>
+                    </button>
+                  )}
+                  
+                  <button
+                    onClick={() => deleteRequest(request.id)}
+                    className="px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg hover:from-red-700 hover:to-red-800 transition-all shadow-lg shadow-red-600/30 border border-red-500/50 font-medium flex items-center space-x-2"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    <span>DELETE</span>
+                  </button>
+                </div>
               </div>
             ))}
           </div>
 
-          {/* Request Details */}
-          <div className="bg-gradient-to-br from-green-950/40 to-gray-950/60 backdrop-blur-xl border border-green-800/30 rounded-lg p-6 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-green-600/5 to-emerald-600/5 opacity-60" />
-            <div className="relative z-10">
-              {selectedRequest ? (
-                <div>
-                  <div className="flex justify-between items-start mb-6">
-                    <h3 className="text-xl font-bold bg-gradient-to-r from-green-300 to-emerald-300 bg-clip-text text-transparent">REQUEST DETAILS</h3>
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => updateRequestStatus(selectedRequest.id, 'resolved')}
-                        className="p-2 text-green-400 hover:bg-green-950/60 border border-green-800/50 rounded-lg transition-all hover:border-green-600/60"
-                        title="Mark as Resolved"
-                      >
-                        <CheckCircle className="w-5 h-5" />
-                      </button>
-                      <button
-                        onClick={() => deleteRequest(selectedRequest.id)}
-                        className="p-2 text-red-400 hover:bg-red-950/60 border border-red-800/50 rounded-lg transition-all hover:border-red-600/60"
-                        title="Delete Request"
-                      >
-                        <Trash2 className="w-5 h-5" />
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-3 p-3 bg-green-950/30 rounded-lg border border-green-800/30">
-                      <User className="w-5 h-5 text-green-400" />
-                      <span className="font-medium text-green-200">{selectedRequest.name}</span>
-                    </div>
-                    <div className="flex items-center space-x-3 p-3 bg-green-950/30 rounded-lg border border-green-800/30">
-                      <Mail className="w-5 h-5 text-green-400" />
-                      <span className="text-green-300">{selectedRequest.email}</span>
-                    </div>
-                    <div className="flex items-center space-x-3 p-3 bg-green-950/30 rounded-lg border border-green-800/30">
-                      <Phone className="w-5 h-5 text-green-400" />
-                      <span className="text-green-300">{selectedRequest.phone}</span>
-                    </div>
-                    <div className="flex items-center space-x-3 p-3 bg-green-950/30 rounded-lg border border-green-800/30">
-                      <Calendar className="w-5 h-5 text-green-400" />
-                      <span className="text-green-300">{selectedRequest.date}</span>
-                    </div>
-                    <div className="p-3 bg-green-950/30 rounded-lg border border-green-800/30">
-                      <div className="flex items-start space-x-3">
-                        <MessageSquare className="w-5 h-5 text-green-400 mt-1" />
-                        <div>
-                          <p className="font-medium mb-2 text-green-200">{selectedRequest.subject}</p>
-                          <p className="text-green-300">{selectedRequest.message}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-6 flex space-x-3">
-                    <button
-                      onClick={() => updateRequestStatus(selectedRequest.id, 'in-progress')}
-                      className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg shadow-blue-600/30 border border-blue-500/50"
-                    >
-                      IN PROGRESS
-                    </button>
-                    <button
-                      onClick={() => updateRequestStatus(selectedRequest.id, 'resolved')}
-                      className="px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all shadow-lg shadow-green-600/30 border border-green-500/50"
-                    >
-                      RESOLVE
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center text-green-500">
-                  <MessageSquare className="w-12 h-12 mx-auto mb-4 text-green-400 opacity-50" />
-                  <p>Select a request to view details</p>
-                </div>
-              )}
+          {filteredRequests.length === 0 && (
+            <div className="text-center py-12">
+              <MessageSquare className="w-16 h-16 mx-auto mb-4 text-green-400 opacity-50" />
+              <p className="text-green-400 text-lg">No contact requests found matching your filters</p>
+              <p className="text-green-500 text-sm mt-2">Try adjusting your search criteria</p>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
   );
 };
 
+//Service Bookings Component
 const ServiceBookingsComponent = () => {
   const [bookings, setBookings] = useState(mockServiceBookings);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [serviceTypeFilter, setServiceTypeFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('date');
+
+  // Get unique service types for filter
+  const serviceTypes = [...new Set(bookings.map(booking => booking.serviceType))];
+
+  // Calculate summary statistics
+  const totalBookings = bookings.length;
+  const pendingBookings = bookings.filter(b => b.status === 'pending').length;
+  const confirmedBookings = bookings.filter(b => b.status === 'confirmed').length;
+  const inProgressBookings = bookings.filter(b => b.status === 'in-progress').length;
 
   const filteredBookings = bookings.filter(booking => {
     const matchesSearch = booking.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         booking.bikeModel.toLowerCase().includes(searchTerm.toLowerCase());
+                         booking.bikeModel.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         booking.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || booking.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    const matchesServiceType = serviceTypeFilter === 'all' || booking.serviceType === serviceTypeFilter;
+    return matchesSearch && matchesStatus && matchesServiceType;
+  }).sort((a, b) => {
+    switch (sortBy) {
+      case 'date':
+        return new Date(a.preferredDate) - new Date(b.preferredDate);
+      case 'time':
+        return a.preferredTime.localeCompare(b.preferredTime);
+      case 'status':
+        return a.status.localeCompare(b.status);
+      default:
+        return 0;
+    }
   });
 
   const updateBookingStatus = (id, newStatus) => {
@@ -1085,38 +1295,76 @@ const ServiceBookingsComponent = () => {
       case 'confirmed': return 'text-green-400 bg-green-950/60 border border-green-800/50';
       case 'completed': return 'text-blue-400 bg-blue-950/60 border border-blue-800/50';
       case 'cancelled': return 'text-red-400 bg-red-950/60 border border-red-800/50';
+      case 'in-progress': return 'text-purple-400 bg-purple-950/60 border border-purple-800/50';
       default: return 'text-gray-400 bg-gray-950/60 border border-gray-800/50';
+    }
+  };
+
+  const getSummaryBoxColor = (type) => {
+    switch (type) {
+      case 'total': return 'from-blue-600 to-blue-700 border-blue-500/50 shadow-blue-600/30';
+      case 'pending': return 'from-orange-600 to-orange-700 border-orange-500/50 shadow-orange-600/30';
+      case 'confirmed': return 'from-green-600 to-green-700 border-green-500/50 shadow-green-600/30';
+      case 'inprogress': return 'from-purple-600 to-purple-700 border-purple-500/50 shadow-purple-600/30';
+      default: return 'from-gray-600 to-gray-700 border-gray-500/50 shadow-gray-600/30';
     }
   };
 
   return (
     <div className="bg-gradient-to-br from-green-950/60 to-gray-950/80 backdrop-blur-xl border border-green-800/50 rounded-xl shadow-lg shadow-green-900/30 relative overflow-hidden">
       {/* Background Effects */}
-      <div className="absolute inset-0 bg-gradient-to-br from-green-600/10 to-emerald-600/10 opacity-60" />
-      
-      <div className="relative z-10">
+      {/* <div className="absolute inset-0 bg-gradient-to-br from-green-600/10 to-emerald-600/10 opacity-60" /> */}
+
+      <div>
         <div className="p-6 border-b border-green-800/50">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full flex items-center justify-center shadow-lg shadow-green-500/50 border border-green-500/30">
                 <Wrench className="w-6 h-6 text-white" />
               </div>
               <div>
                 <h2 className="text-2xl font-bold bg-gradient-to-r from-green-300 to-emerald-300 bg-clip-text text-transparent">SERVICE BOOKINGS</h2>
-                <p className="text-green-400 text-sm">MAINTENANCE & REPAIR APPOINTMENTS</p>
+                <p className="text-green-400 text-sm">CUSTOMER INQUIRIES & SUPPORT DASHBOARD</p>
               </div>
             </div>
+            
+            {/* Summary Boxes */}
             <div className="flex space-x-3">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-green-400 w-4 h-4" />
-                <input
-                  type="text"
-                  placeholder="Search bookings..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 bg-green-950/50 border border-green-700/50 rounded-lg text-green-200 placeholder-green-500 focus:border-green-500 focus:ring-2 focus:ring-green-500/30 transition-all"
-                />
+              <div className={`px-4 py-3 bg-gradient-to-r ${getSummaryBoxColor('total')} rounded-lg border shadow-lg text-center min-w-[80px]`}>
+                <div className="text-2xl font-bold text-white">{totalBookings}</div>
+                <div className="text-xs text-white/80 uppercase">Total</div>
               </div>
+              <div className={`px-4 py-3 bg-gradient-to-r ${getSummaryBoxColor('pending')} rounded-lg border shadow-lg text-center min-w-[80px]`}>
+                <div className="text-2xl font-bold text-white">{pendingBookings}</div>
+                <div className="text-xs text-white/80 uppercase">Pending</div>
+              </div>
+              <div className={`px-4 py-3 bg-gradient-to-r ${getSummaryBoxColor('confirmed')} rounded-lg border shadow-lg text-center min-w-[80px]`}>
+                <div className="text-2xl font-bold text-white">{confirmedBookings}</div>
+                <div className="text-xs text-white/80 uppercase">Confirmed</div>
+              </div>
+              <div className={`px-4 py-3 bg-gradient-to-r ${getSummaryBoxColor('inprogress')} rounded-lg border shadow-lg text-center min-w-[80px]`}>
+                <div className="text-2xl font-bold text-white">{inProgressBookings}</div>
+                <div className="text-xs text-white/80 uppercase">In Progress</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Filters and Search */}
+        <div className="p-6 border-b border-green-800/50">
+          <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 sm:space-x-4">
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-green-400 w-4 h-4" />
+              <input
+                type="text"
+                placeholder="Search by name, subject, or email..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 bg-green-950/50 border border-green-700/50 rounded-lg text-green-200 placeholder-green-500 focus:border-green-500 focus:ring-2 focus:ring-green-500/30 transition-all"
+              />
+            </div>
+            
+            <div className="flex space-x-3">
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
@@ -1125,8 +1373,30 @@ const ServiceBookingsComponent = () => {
                 <option value="all">All Status</option>
                 <option value="pending">Pending</option>
                 <option value="confirmed">Confirmed</option>
+                <option value="in-progress">In Progress</option>
                 <option value="completed">Completed</option>
                 <option value="cancelled">Cancelled</option>
+              </select>
+              
+              <select
+                value={serviceTypeFilter}
+                onChange={(e) => setServiceTypeFilter(e.target.value)}
+                className="px-4 py-2 bg-green-950/50 border border-green-700/50 rounded-lg text-green-200 focus:border-green-500 focus:ring-2 focus:ring-green-500/30 transition-all"
+              >
+                <option value="all">All Types</option>
+                {serviceTypes.map(type => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
+              
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-4 py-2 bg-green-950/50 border border-green-700/50 rounded-lg text-green-200 focus:border-green-500 focus:ring-2 focus:ring-green-500/30 transition-all"
+              >
+                <option value="date">Sort by Date</option>
+                <option value="time">Sort by Time</option>
+                <option value="status">Sort by Status</option>
               </select>
             </div>
           </div>
@@ -1134,7 +1404,7 @@ const ServiceBookingsComponent = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6">
           {/* Bookings List */}
-          <div className="space-y-4">
+          <div className="space-y-4 max-h-[600px] overflow-y-auto">
             {filteredBookings.map((booking) => (
               <div
                 key={booking.id}
@@ -1148,7 +1418,7 @@ const ServiceBookingsComponent = () => {
                 <div className="flex justify-between items-start mb-3">
                   <h3 className="font-semibold text-green-200">{booking.customerName}</h3>
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(booking.status)}`}>
-                    {booking.status.toUpperCase()}
+                    {booking.status.toUpperCase().replace('-', ' ')}
                   </span>
                 </div>
                 <p className="text-sm text-green-400 mb-2">{booking.bikeModel} - {booking.serviceType}</p>
@@ -1158,12 +1428,16 @@ const ServiceBookingsComponent = () => {
                 </p>
               </div>
             ))}
+            {filteredBookings.length === 0 && (
+              <div className="text-center text-green-500 py-8">
+                <p>No bookings found matching your criteria</p>
+              </div>
+            )}
           </div>
 
           {/* Booking Details */}
-          <div className="bg-gradient-to-br from-green-950/40 to-gray-950/60 backdrop-blur-xl border border-green-800/30 rounded-lg p-6 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-green-600/5 to-emerald-600/5 opacity-60" />
-            <div className="relative z-10">
+          <div className="bg-green-950/50 border border-green-800/40 rounded-lg p-6">
+            <div>
               {selectedBooking ? (
                 <div>
                   <div className="flex justify-between items-start mb-6">
@@ -1232,6 +1506,12 @@ const ServiceBookingsComponent = () => {
                       CONFIRM
                     </button>
                     <button
+                      onClick={() => updateBookingStatus(selectedBooking.id, 'in-progress')}
+                      className="px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg hover:from-purple-700 hover:to-purple-800 transition-all shadow-lg shadow-purple-600/30 border border-purple-500/50"
+                    >
+                      IN PROGRESS
+                    </button>
+                    <button
                       onClick={() => updateBookingStatus(selectedBooking.id, 'completed')}
                       className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg shadow-blue-600/30 border border-blue-500/50"
                     >
@@ -1257,6 +1537,23 @@ const ServiceBookingsComponent = () => {
       </div>
     </div>
   );
+};
+
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-gradient-to-br from-green-950/90 to-gray-950/90 backdrop-blur-xl border border-green-800/50 rounded-lg p-3 shadow-lg shadow-green-900/30">
+        <p className="text-green-300 font-medium mb-2">{`${label} 2024`}</p>
+        {payload.map((entry, index) => (
+          <p key={index} className="text-green-200 text-sm">
+            <span className="inline-block w-3 h-3 rounded-full mr-2" style={{ backgroundColor: entry.color }}></span>
+            {entry.name}: {entry.name === 'Growth' ? `${entry.value}%` : entry.value}
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
 };
 
 const AnalyticsComponent = () => {
@@ -1334,6 +1631,77 @@ const AnalyticsComponent = () => {
                 </div>
                 <div className="text-2xl font-bold text-green-200 mb-1">+{mockAnalytics.monthlyGrowth}%</div>
                 <div className="text-sm text-green-400">Monthly Growth</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Monthly Growth Chart */}
+          <div className="mb-8">
+            <div className="bg-gradient-to-br from-green-950/40 to-gray-950/60 backdrop-blur-xl border border-green-800/30 rounded-lg p-6 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-green-600/5 to-emerald-600/5 opacity-60" />
+              <div className="relative z-10">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-8 h-8 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-lg flex items-center justify-center">
+                    <Calendar className="w-4 h-4 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-green-200">Monthly Growth Analysis</h3>
+                </div>
+                
+                <div className="h-80 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={monthlyGrowthData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                      <defs>
+                        <linearGradient id="growthGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#10b981" stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor="#10b981" stopOpacity={0.1}/>
+                        </linearGradient>
+                        <linearGradient id="requestsGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.1}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#065f46" opacity={0.3} />
+                      <XAxis 
+                        dataKey="month" 
+                        stroke="#16a34a" 
+                        fontSize={12}
+                        tick={{ fill: '#16a34a' }}
+                      />
+                      <YAxis 
+                        stroke="#16a34a" 
+                        fontSize={12}
+                        tick={{ fill: '#16a34a' }}
+                      />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Area
+                        type="monotone"
+                        dataKey="growth"
+                        name="Growth"
+                        stroke="#10b981"
+                        strokeWidth={3}
+                        fill="url(#growthGradient)"
+                        dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }}
+                        activeDot={{ r: 6, fill: '#10b981', stroke: '#065f46', strokeWidth: 2 }}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+
+                {/* Growth Metrics */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 pt-6 border-t border-green-800/30">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-200">+62%</div>
+                    <div className="text-sm text-green-400">6-Month Growth</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-200">+12.5%</div>
+                    <div className="text-sm text-green-400">Current Month</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-200">↗️ 2.1%</div>
+                    <div className="text-sm text-green-400">Trend Acceleration</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -1468,8 +1836,10 @@ const AdminDashboard = () => {
     setActiveTab('bikes');
   };
 
+   
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-950 via-gray-950 to-green-900 text-white overflow-hidden">
+      
       {/* Enhanced Dynamic Background */}
       <div className="fixed inset-0 opacity-40 pointer-events-none">
         <div 
@@ -1510,9 +1880,13 @@ const AdminDashboard = () => {
         <div className="border-b border-green-800/50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center py-6">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full flex items-center justify-center shadow-lg shadow-green-500/50 border border-green-500/30">
-                  <Activity className="w-6 h-6 text-white" />
+              <div className="flex items-center space-x-1.5 -ml-2">
+                <div className="w-14 h-14 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full flex items-center justify-center shadow-lg shadow-green-500/50 border border-green-500/30 overflow-hidden">
+                  <img 
+                    src="logo.jpg" 
+                    alt="Logo" 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <div>
                   <h1 className="text-3xl font-bold bg-gradient-to-r from-green-300 to-emerald-300 bg-clip-text text-transparent">VIKRANT EV ADMIN</h1>
