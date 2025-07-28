@@ -55,7 +55,6 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       setError(null);
-      setLoading(true);
       const result = await authService.login(email, password);
       
       if (result.success) {

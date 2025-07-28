@@ -4,33 +4,64 @@ import { Strategy as LocalStrategy } from 'passport-local';
 import User from '../models/usermodel.js';
 
 // Local Strategy (Email/Password) - Only for login, not registration
+
+
 passport.use(new LocalStrategy({
-  usernameField: 'email',
+  usernameField: 'email', // Tell passport to use 'email' field instead of 'username'
   passwordField: 'password'
 }, async (email, password, done) => {
   try {
-    // Find user with completed registration only
-    const user = await User.findOne({ 
-      email: email.toLowerCase(),
-      registrationComplete: true 
-    });
+    console.log('Local Strategy - Attempting login for:', email);
+    
+    // Find user by email
+    const user = await User.findOne({ email: email.toLowerCase() });
     
     if (!user) {
-      return done(null, false, { message: 'No account found. Please register with Google first.' });
+      console.log('Local Strategy - User not found:', email);
+      return done(null, false, { message: 'Invalid credentials' });
     }
-
+    
+    console.log('Local Strategy - User found:', {
+      id: user._id,
+      email: user.email,
+      hasPassword: !!user.password,
+      provider: user.provider
+    });
+    
+    // Check if user has a password set (important for Google users)
+    if (!user.password) {
+      console.log('Local Strategy - User has no password set');
+      return done(null, false, { 
+        message: 'Please set a password first or login with Google' 
+      });
+    }
+    
+    // Verify password
     const isValidPassword = await user.comparePassword(password);
+    console.log('Local Strategy - Password valid:', isValidPassword);
     
     if (!isValidPassword) {
-      return done(null, false, { message: 'Invalid password' });
+      return done(null, false, { message: 'Invalid credentials' });
     }
-
+    
+    // Check if registration is complete
+    if (!user.registrationComplete) {
+      return done(null, false, { 
+        message: 'Please complete your registration first' 
+      });
+    }
+    
+    console.log('Local Strategy - Login successful for:', email);
+    
     // Update last login
     user.lastLogin = new Date();
     await user.save();
     
+    // Return successful user
     return done(null, user);
+    
   } catch (error) {
+    console.error('Local Strategy - Error:', error);
     return done(error);
   }
 }));

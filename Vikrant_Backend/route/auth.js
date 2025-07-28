@@ -1,8 +1,8 @@
 import express from 'express';
 import passport from '../config/passport.js';
 import User from '../models/usermodel.js';
-import { isAuthenticated, needsPasswordSetup,cheakLogin } from '../middleware/auth.js';
-import { handleCallbackUrl,handleCheakRegistration,handleCompleRegistationWithPassword, handleLogout, handleMe} from '../controllers/authcontrollers.js';
+import { isAuthenticated, needsPasswordSetup,cheakLogin,debugLogin } from '../middleware/auth.js';
+import { handleCallbackUrl,handleCheakRegistration,handleCompleRegistationWithPassword, handleLogout, handleMe,} from '../controllers/authcontrollers.js';
 
 const router = express.Router();
 
@@ -23,7 +23,7 @@ router.get('/google/callback',
 router.post('/complete-registration', needsPasswordSetup, handleCompleRegistationWithPassword);
 
 // Login with email/password
-router.post('/login', cheakLogin);
+router.post('/login',debugLogin, cheakLogin);
 
 // Logout route
 router.post('/logout', handleLogout);
