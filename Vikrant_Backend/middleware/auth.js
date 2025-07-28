@@ -1,3 +1,7 @@
+
+
+import passport from '../config/passport.js';
+
 export const isAuthenticated = (req, res, next) => {
   if (req.isAuthenticated() && !req.user.needsPasswordSetup) {
     return next();
@@ -27,13 +31,19 @@ export const needsPasswordSetup = (req, res, next) => {
   });
 };
 
-export const cheakLogin = (req, res, next) => {
+export const handleLogin = (req, res, next) => {
+  console.log('Login attempt:', req.body);
+  
   passport.authenticate('local', (err, user, info) => {
+    console.log('Passport authenticate result:', { err: !!err, user: !!user, info });
+    
     if (err) {
+      console.error('Authentication error:', err);
       return res.status(500).json({ message: 'Authentication error' });
     }
     
     if (!user) {
+      console.log('Authentication failed:', info);
       return res.status(401).json({ 
         message: info.message || 'Invalid credentials',
         hint: 'Remember to register with Google first if you don\'t have an account'
@@ -42,8 +52,11 @@ export const cheakLogin = (req, res, next) => {
 
     req.login(user, (err) => {
       if (err) {
+        console.error('req.login error:', err);
         return res.status(500).json({ message: 'Login failed' });
       }
+      
+      console.log('Login successful for user:', user.email);
       
       res.json({
         message: 'Login successful',
@@ -56,4 +69,11 @@ export const cheakLogin = (req, res, next) => {
       });
     });
   })(req, res, next);
-}
+};
+export const debugLogin = (req, res, next) => {
+  console.log('=== LOGIN DEBUG ===');
+  console.log('Request body:', req.body);
+  console.log('Content-Type:', req.headers['content-type']);
+  console.log('==================');
+  next();
+};

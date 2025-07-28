@@ -1,3 +1,4 @@
+import { runInNewContext } from 'vm';
 import User from '../models/usermodel.js';
 
 const handleCallbackUrl = (req,res)=>{
@@ -149,4 +150,7 @@ const handleCheakRegistration = (req, res) => {
     res.json(response);
   }
 }
+
+
+
 export {handleCallbackUrl,handleCompleRegistationWithPassword,handleLogout,handleMe,handleCheakRegistration}
