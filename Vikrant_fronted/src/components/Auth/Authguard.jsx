@@ -22,23 +22,30 @@ const AuthGuard = ({ children, requirePasswordSetup = false }) => {
 
   // For login page
   if (location.pathname === ROUTES.LOGIN) {
+    // If user is fully authenticated and doesn't need password setup, redirect to home
     if (isAuthenticated && !needsPasswordSetup) {
       return <Navigate to={ROUTES.HOME} replace />;
     }
-    if (isAuthenticated && needsPasswordSetup) {
+    // If user needs password setup, redirect there
+    if (needsPasswordSetup) {
       return <Navigate to={ROUTES.SETUP_PASSWORD} replace />;
     }
+    // Otherwise, show login page
     return children;
   }
 
   // For setup password page
   if (location.pathname === ROUTES.SETUP_PASSWORD) {
-    if (!isAuthenticated && !needsPasswordSetup) {
+    // If user doesn't need password setup, redirect appropriately
+    if (!needsPasswordSetup) {
+      // If fully authenticated, go to home
+      if (isAuthenticated) {
+        return <Navigate to={ROUTES.HOME} replace />;
+      }
+      // If not authenticated at all, go to login
       return <Navigate to={ROUTES.LOGIN} replace />;
     }
-    if (isAuthenticated && !needsPasswordSetup) {
-      return <Navigate to={ROUTES.HOME} replace />;
-    }
+    // If user needs password setup, show the setup page
     return children;
   }
 

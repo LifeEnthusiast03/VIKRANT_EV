@@ -6,18 +6,20 @@ const handleCallbackUrl = (req,res)=>{
     try {
       const frontendUrl = process.env.FRONTEND_URL || 'https://vikrant-ev.vercel.app';
       
+      console.log('OAuth callback - User object:', req.user);
+      console.log('OAuth callback - Session ID:', req.sessionID);
+      console.log('OAuth callback - Is authenticated:', req.isAuthenticated());
+      
       // Check if user needs password setup (new registration)
       if (req.user && req.user.needsPasswordSetup) {
         console.log('Redirecting to password setup');
         // Redirect to frontend password setup page
         res.redirect(`${frontendUrl}/setup-password`);
       } else if (req.user) {
-        console.log(req.user.name);
-        console.log(req.user.email);
-        
-        
-        console.log('Redirecting to dashboard - existing user');
-        // Existing user - redirect to frontend dashboard  
+        console.log('User name:', req.user.name);
+        console.log('User email:', req.user.email);
+        console.log('Redirecting to home - existing user');
+        // Existing user - redirect to frontend home page (not dashboard directly)
         res.redirect(`${frontendUrl}/`);
       } else {
         console.log('No user object found, redirecting to login with error');
@@ -25,7 +27,7 @@ const handleCallbackUrl = (req,res)=>{
       }
     } catch (error) {
       console.error('Error in Google callback:', error);
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+      const frontendUrl = process.env.FRONTEND_URL || 'https://vikrant-ev.vercel.app';
       res.redirect(`${frontendUrl}/login?error=auth_failed`);
     }
 }

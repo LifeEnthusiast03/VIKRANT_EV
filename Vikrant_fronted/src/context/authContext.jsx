@@ -37,11 +37,25 @@ export const AuthProvider = ({ children }) => {
         return;
       }
       
-      // Otherwise, get the current user
-      const userData = await authService.getCurrentUser();
-      console.log('Current user data:', userData);
-      setUser(userData);
-      setRegistrationStep('complete');
+      // If registration status indicates user is authenticated but doesn't need setup
+      if (regStatus && regStatus.isAuthenticated && !regStatus.needsPasswordSetup) {
+        try {
+          // Get the current user data
+          const userData = await authService.getCurrentUser();
+          console.log('Current user data:', userData);
+          setUser(userData);
+          setRegistrationStep('complete');
+          setLoading(false);
+          return;
+        } catch (userError) {
+          console.error('Failed to get user data:', userError);
+          // Fall through to handle as unauthenticated
+        }
+      }
+      
+      // If no registration status or not authenticated, clear everything
+      setUser(null);
+      setRegistrationStep(null);
       
     } catch (error) {
       console.error('Auth check failed:', error);
