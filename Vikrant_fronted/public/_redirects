@@ -1,5 +1,0 @@
-# Static assets - these files don't need to be rewritten to index.html
-/*.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ 404
-
-# All other routes should serve index.html for client-side routing
-/* /index.html 200
