@@ -20,6 +20,9 @@ import ProjectPage from './pages/public/Projcet/project';
 import ServiceBooking from './pages/private/service/service';
 import Dashboard from './pages/private/Dashboard/dashboard';
 
+// Test page for debugging
+import TestPage from './pages/TestPage';
+
 // Components
 import Navbar from './components/common/Navbar/navbar';
 import ElectricBikeChatbot from './components/ui/Bikebot/bikechatbot';
@@ -108,11 +111,21 @@ const App = () => {
             } 
           />
 
+          {/* Test Route for debugging */}
+          <Route path="/test" element={<TestPage />} />
+
           {/* Redirect root to home */}
           <Route path="/" element={<Navigate to={ROUTES.HOME} replace />} />
           
-          {/* Catch all route - redirect to home */}
-          <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />
+          {/* Catch all route - show what route was attempted */}
+          <Route path="*" element={
+            <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+              <h1>Route Not Found</h1>
+              <p>Attempted route: {window.location.pathname}</p>
+              <p>Available routes: /, /login, /setup-password, /team, /projects, /contact, /dashboard, /service, /test</p>
+              <a href="/">Go to Home</a>
+            </div>
+          } />
         </Routes>
       </Router>
     </AuthProvider>
