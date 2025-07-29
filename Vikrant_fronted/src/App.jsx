@@ -9,6 +9,7 @@ import ProtectedRoute from './components/Auth/protectedroute';
 // Auth pages
 import Login from './pages/Auth/Login';
 import PasswordSetup from './pages/Auth/SetPassword';
+import OAuthCallback from './pages/Auth/OAuthCallback';
 
 // Public pages
 import HomePage from './pages/public/Home/Home';
@@ -37,6 +38,9 @@ const App = () => {
     <AuthProvider>
       <Router>
         <Routes>
+          {/* OAuth Callback Route */}
+          <Route path="/auth/callback" element={<OAuthCallback />} />
+          
           {/* Auth Routes */}
           <Route 
             path={ROUTES.LOGIN} 

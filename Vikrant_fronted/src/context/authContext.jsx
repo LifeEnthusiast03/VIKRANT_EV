@@ -11,21 +11,66 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     checkAuthStatus();
+    
+    // Also check auth status when the page becomes visible (handles OAuth redirects)
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        console.log('Page became visible, checking auth status...');
+        checkAuthStatus();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    // Check auth status when the window gains focus (handles OAuth redirects)
+    const handleFocus = () => {
+      console.log('Window gained focus, checking auth status...');
+      checkAuthStatus();
+    };
+    
+    window.addEventListener('focus', handleFocus);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+    };
   }, []);
 
   const checkAuthStatus = async () => {
     try {
       setError(null);
+      console.log('=== Checking auth status ===');
       
-      console.log('Checking auth status...');
+      // Add a small delay to ensure session is properly set after OAuth redirect
+      if (window.location.search.includes('callback') || 
+          document.referrer.includes('accounts.google.com') ||
+          performance.navigation.type === 1) {
+        console.log('Detected potential OAuth redirect, waiting for session...');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
       
       // First check if there's a pending registration
       let regStatus = null;
       try {
         regStatus = await authService.checkRegistrationStatus();
-        console.log('Registration status:', regStatus);
+        console.log('Registration status response:', regStatus);
       } catch (regError) {
         console.error('Registration status check failed:', regError);
+        // If registration status fails, try to get user directly
+        try {
+          const userData = await authService.getCurrentUser();
+          console.log('Got user directly:', userData);
+          setUser(userData);
+          setRegistrationStep('complete');
+          setLoading(false);
+          return;
+        } catch (userError) {
+          console.log('No user found, treating as unauthenticated');
+          setUser(null);
+          setRegistrationStep(null);
+          setLoading(false);
+          return;
+        }
       }
       
       // If user needs password setup, handle that first
@@ -54,6 +99,7 @@ export const AuthProvider = ({ children }) => {
       }
       
       // If no registration status or not authenticated, clear everything
+      console.log('No authentication found, clearing state');
       setUser(null);
       setRegistrationStep(null);
       

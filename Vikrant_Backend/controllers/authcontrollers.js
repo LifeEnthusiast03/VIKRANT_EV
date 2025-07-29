@@ -10,21 +10,10 @@ const handleCallbackUrl = (req,res)=>{
       console.log('OAuth callback - Session ID:', req.sessionID);
       console.log('OAuth callback - Is authenticated:', req.isAuthenticated());
       
-      // Check if user needs password setup (new registration)
-      if (req.user && req.user.needsPasswordSetup) {
-        console.log('Redirecting to password setup');
-        // Redirect to frontend password setup page
-        res.redirect(`${frontendUrl}/setup-password`);
-      } else if (req.user) {
-        console.log('User name:', req.user.name);
-        console.log('User email:', req.user.email);
-        console.log('Redirecting to home - existing user');
-        // Existing user - redirect to frontend home page (not dashboard directly)
-        res.redirect(`${frontendUrl}/`);
-      } else {
-        console.log('No user object found, redirecting to login with error');
-        res.redirect(`${frontendUrl}/login?error=auth_failed`);
-      }
+      // Always redirect to the OAuth callback handler page
+      // The frontend will determine where to go based on auth status
+      res.redirect(`${frontendUrl}/auth/callback`);
+      
     } catch (error) {
       console.error('Error in Google callback:', error);
       const frontendUrl = process.env.FRONTEND_URL || 'https://vikrant-ev.vercel.app';
