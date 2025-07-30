@@ -1,4 +1,4 @@
-export const API_BASE_URL =  'https://vikrant-backend.vercel.app'
+export const API_BASE_URL =  'http://localhost:5000'
 
 export const ROUTES = {
   HOME: '/',
