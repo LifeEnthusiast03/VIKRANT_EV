@@ -14,7 +14,7 @@ router.get('/google',
 
 router.get('/google/callback',
   passport.authenticate('google', { 
-    failureRedirect: `${process.env.FRONTEND_URL || 'https://vikrantev.vercel.app'}/login?error=auth_failed`
+    failureRedirect: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/login?error=auth_failed`
   }),
   handleCallbackUrl
 );
