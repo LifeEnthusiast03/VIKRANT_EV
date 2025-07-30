@@ -4,7 +4,7 @@ import { log } from 'console';
 
 const handleCallbackUrl = (req,res)=>{
     try {
-      const frontendUrl = process.env.FRONTEND_URL || 'https://vikrant-ev.vercel.app';
+      const frontendUrl = process.env.FRONTEND_URL || 'https://vikrantev.vercel.app';
       
       console.log('OAuth callback - User object:', req.user);
       console.log('OAuth callback - Session ID:', req.sessionID);
@@ -16,7 +16,7 @@ const handleCallbackUrl = (req,res)=>{
       
     } catch (error) {
       console.error('Error in Google callback:', error);
-      const frontendUrl = process.env.FRONTEND_URL || 'https://vikrant-ev.vercel.app';
+      const frontendUrl = process.env.FRONTEND_URL || 'https://vikrantev.vercel.app';
       res.redirect(`${frontendUrl}/login?error=auth_failed`);
     }
 }

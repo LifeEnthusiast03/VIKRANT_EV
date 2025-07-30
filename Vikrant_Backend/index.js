@@ -18,7 +18,7 @@ const server = createServer(app);
 const  PORT = process.env.PORT||5000;
 //middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'https://vikrant-ev.vercel.app',
+  origin: process.env.FRONTEND_URL || 'https://vikrantev.vercel.app',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -48,16 +48,25 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({
-    mongoUrl: process.env.MONGODB_URI || 'mongodb://localhost:27017/your-bike-db',
-    touchAfter: 24 * 3600 // Lazy session update
+    mongoUrl: process.env.MONGODB_URI,
+    touchAfter: 24 * 3600
   }),
   cookie: {
-    secure: process.env.NODE_ENV === 'production', // Only HTTPS in production
+    secure: false, // Explicitly false for development
     httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax' // For cross-origin
+    maxAge: 24 * 60 * 60 * 1000,
+    sameSite: 'lax' // Try this instead
   }
 }));
+app.use((req, res, next) => {
+  console.log(`🔍 [${req.method}] ${req.url}`, {
+    sessionID: req.sessionID,
+    hasCookies: !!req.headers.cookie,
+    cookies: req.headers.cookie,
+    isAuthenticated: req.isAuthenticated ? req.isAuthenticated() : false
+  });
+  next();
+});
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -72,7 +81,7 @@ app.get('/',(req,res)=>{
 
 app.get('/dashboard', (req, res) => {
   if (!req.isAuthenticated() || req.user.needsPasswordSetup) {
-    return res.redirect(`${process.env.FRONTEND_URL || 'https://vikrant-ev.vercel.app'}/login`);
+    return res.redirect(`${process.env.FRONTEND_URL || 'https://vikrantev.vercel.app'}/login`);
   }
   
   res.json({

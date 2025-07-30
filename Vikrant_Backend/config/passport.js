@@ -154,12 +154,15 @@ passport.serializeUser((user, done) => {
   
   if (user.needsPasswordSetup) {
     // For users needing password setup, store the temp data with a consistent identifier
+    console.log('need pasword setup');
+    
     done(null, { 
       tempUser: user, 
       needsPasswordSetup: true,
       type: 'incomplete_registration'
     });
   } else {
+      console.log('no need pasword setup');
     done(null, { 
       userId: user._id.toString(),
       type: 'complete_user'
