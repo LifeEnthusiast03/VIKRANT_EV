@@ -52,7 +52,7 @@ app.use(session({
     touchAfter: 24 * 3600
   }),
   cookie: {
-    secure: false, // Explicitly false for development
+    secure: true, // Explicitly false for development
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000,
     sameSite: 'lax' // Try this instead
