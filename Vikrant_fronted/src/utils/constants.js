@@ -1,4 +1,4 @@
-export const API_BASE_URL =  'https://vikrant-ev-backend.vercel.app';
+export const API_BASE_URL =  'https://vikrant-backend.vercel.app'
 
 export const ROUTES = {
   HOME: '/',
