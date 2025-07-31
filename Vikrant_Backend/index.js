@@ -13,6 +13,14 @@ import authroute from './route/auth.js'
 dotenv.config();
 connectDb();
 
+// Debug environment variables
+console.log('🔧 Environment Check:', {
+  NODE_ENV: process.env.NODE_ENV,
+  FRONTEND_URL: process.env.FRONTEND_URL,
+  SESSION_SECRET: process.env.SESSION_SECRET ? '✅ Set' : '❌ Missing',
+  MONGODB_URI: process.env.MONGODB_URI ? '✅ Set' : '❌ Missing'
+});
+
 const app = express();
 const PORT = process.env.PORT || 5000
 const server= createServer(app);
@@ -25,7 +33,11 @@ app.use(cors({
     
     const allowedOrigins = [
       process.env.FRONTEND_URL,
-      'https://vikrantev.vercel.app'
+      'https://vikrantev.vercel.app',
+      'http://localhost:3000',
+      'http://localhost:5173',
+      'http://127.0.0.1:3000',
+      'http://127.0.0.1:5173'
     ];
     
     if (allowedOrigins.includes(origin)) {
@@ -66,6 +78,7 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.set('trust proxy', 1);
 app.use(session({
   secret: process.env.SESSION_SECRET, 
   name: 'sessionId', 
@@ -81,10 +94,10 @@ app.use(session({
     retryDelayMs: 100
   }),
   cookie: {
-    secure: true,
+    secure: process.env.NODE_ENV === 'production',
     httpOnly: true, 
     maxAge: 24 * 60 * 60 * 1000, 
-    sameSite:'none'
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
   },
 }));
 
