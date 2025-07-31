@@ -1,7 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
-import {createServer} from 'http'
+import {createServer } from 'http'
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import contactroute from './route/contactroute.js'
@@ -9,19 +9,43 @@ import chatroute from './route/chatroute.js'
 import connectDb from './config/database.js'
 import passport from './config/passport.js'
 import authroute from './route/auth.js'
+
 dotenv.config();
 connectDb();
 
 const app = express();
-const server = createServer(app);
+const PORT = process.env.PORT || 5000
+const server= createServer(app);
 
-const  PORT = process.env.PORT||5000;
 //middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = [
+      process.env.FRONTEND_URL,
+      'https://vikrantev.vercel.app'
+    ];
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.error(`CORS blocked origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization', 
+    'Cookie',
+    'X-Requested-With',
+    'Accept',
+    'Origin'
+  ],
+  exposedHeaders: ['Set-Cookie'],
 }));
 
 // Add request logging middleware
@@ -42,22 +66,29 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'your-secret-key-change-this',
+  secret: process.env.SESSION_SECRET, 
+  name: 'sessionId', 
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({
     mongoUrl: process.env.MONGODB_URI,
-    touchAfter: 24 * 3600
+    touchAfter: 24 * 3600, 
+    ttl: 24 * 60 * 60, 
+    autoRemove: 'native', 
+    // Retry connection
+    retries: 3,
+    retryDelayMs: 100
   }),
   cookie: {
-    secure: true, // Explicitly false for development
-    httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000,
-    sameSite: 'lax' // Try this instead
-  }
+    secure: true,
+    httpOnly: true, 
+    maxAge: 24 * 60 * 60 * 1000, 
+    sameSite:'none'
+  },
 }));
+
+
 app.use((req, res, next) => {
   console.log(`🔍 [${req.method}] ${req.url}`, {
     sessionID: req.sessionID,
@@ -81,7 +112,7 @@ app.get('/',(req,res)=>{
 
 app.get('/dashboard', (req, res) => {
   if (!req.isAuthenticated() || req.user.needsPasswordSetup) {
-    return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/login`);
+    return res.redirect(`${process.env.FRONTEND_URL || 'https://vikrantev.vercel.app'}/login`);
   }
   
   res.json({
@@ -91,6 +122,6 @@ app.get('/dashboard', (req, res) => {
 });
 
 
-server.listen(PORT,()=>{
+server.listen(PORT ,()=>{
     console.log(`server is running on port ${PORT}`);
 })
