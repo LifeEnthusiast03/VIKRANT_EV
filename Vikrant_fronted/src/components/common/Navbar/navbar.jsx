@@ -50,14 +50,8 @@ const Navbar = () => {
       <div className="bg-black/90 backdrop-blur-md border border-green-500/40 rounded-full shadow-2xl px-6 py-3 hover:border-lime-400/60 transition-all duration-300">
         <div className="flex items-center space-x-8">
           
-          {/* Brand with Greenish-Yellow Glow Animation */}
-          <Link
-            to={ROUTES.HOME}
-            className="text-lg font-bold bg-gradient-to-r from-green-400 via-lime-400 to-yellow-400 bg-clip-text text-transparent 
-                       hover:scale-105 transform transition duration-300 cursor-pointer whitespace-nowrap animate-pulse"
-          >
-            VIKRANT EV
-          </Link>
+          
+          
 
           {/* Navigation Buttons */}
           <div className="flex space-x-3">

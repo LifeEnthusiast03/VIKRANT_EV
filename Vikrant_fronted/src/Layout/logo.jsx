@@ -14,6 +14,10 @@ const LogoComp = ({
         alt={alt} 
         className={`${size} rounded-lg shadow-lg border-2 ${borderColor} transition-all duration-300`}
       />
+      <div className="text-lg font-bold bg-gradient-to-r from-green-400 via-lime-400 to-yellow-400 bg-clip-text text-transparent
+                      hover:scale-105 transform transition duration-300 cursor-pointer whitespace-nowrap animate-pulse mt-2">
+        VIKRANT EV
+      </div>
     </div>
   );
 };
