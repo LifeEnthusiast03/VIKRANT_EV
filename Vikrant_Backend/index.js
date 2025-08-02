@@ -8,7 +8,8 @@ import contactroute from './route/contactroute.js'
 import chatroute from './route/chatroute.js'
 import connectDb from './config/database.js'
 import passport from './config/passport.js'
-import authroute from './route/auth.js'
+import authroute from './route/auth.js';
+import serviceRoute from './route/serviceroute.js'
 
 dotenv.config();
 connectDb();
@@ -116,6 +117,7 @@ app.use(passport.session());
 
 
 app.use('/auth',authroute);
+app.use('/service',serviceRoute)
 app.use('/api/contact-us',contactroute);
 app.use('/api/chat',chatroute);
 //home route
